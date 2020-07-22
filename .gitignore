@@ -21,3 +21,5 @@
 .idea/mongoSettings.xml
 
 .idea/
+
+__pycache__/
