@@ -46,10 +46,20 @@ def module_select(keys):
         ret_val = attr_
     return ret_val
 
+def dynamic_select(args):
+    if type(args) is list:
+        pass
+    elif type(args) is dict:
+        pass
+    elif type(args) is 'path':
+        pass
+    elif type(args) is str:
+        pass
+
 class NNetTrainer:
 
     def __init__(self):
-
+        """Definition of fundamental instance variables"""
         self.tags = []      # List of obj attribute selections
         self.args = {}      # Dict of argument args associated with tags i.e. args[tag] = tag_args
         self.kwargs = {}    # Dict of argument kwargs associated with tags i.e. args[tag] = tag_kwargs
@@ -159,24 +169,22 @@ class NNetTrainer:
 class PlaybookTrainer(NNetTrainer):
 
     def __init__(self, playbook):
-        super(PlaybookTrainer, self).__init__()
 
+        super(PlaybookTrainer, self).__init__()
         self.epochs = 50
         print('Initializing Playbook Trainer')
-        self.tags = {k: vals[0] for k, vals in playbook.items()}
-        self.args = {k: vals[1] for k, vals in playbook.items()}
-        self.kwargs = {k: vals[2] for k, vals in playbook.items()}
+        self.update_playbook(playbook)
 
         print("%s, %s" % (self.args['optimizer'], self.kwargs['optimizer']))
 
         # Process transform arguments from the playbook dictionary into transform objects
-        self.kwargs['dataset']['transform'] = \
-            transforms.Compose([select_module(module=transforms, attr_=key)(*args, **kwargs)
-                for key, args, kwargs in self.kwargs['dataset']['transform']])
+        # self.kwargs['dataset']['transform'] = \
+        #     transforms.Compose([select_module(module=transforms, attr_=key)(*args, **kwargs)
+        #         for key, args, kwargs in self.kwargs['dataset']['transform']])
+        #
+        # print('Initialization Complete')
 
-        print('Initialization Complete')
-
-    def simple_training_init(self):
+    def initialize_training(self):
         """
         Initializations are all in proper order and arguments are taken from
         the self's object attributes.
@@ -190,10 +198,20 @@ class PlaybookTrainer(NNetTrainer):
         self.select_scheduler()
         self.select_loader()
         self.loss_function = torch.nn.CrossEntropyLoss()
-
         self.model.classifier[-1].out_features = len(self.dataset.classes)
         self.model.cuda()
         return True
+
+
+    def update_playbook(self, playbook):
+
+        self.tags = {k: vals[0] for k, vals in playbook.items()}
+        self.args = {k: vals[1] for k, vals in playbook.items()}
+        self.kwargs = {k: vals[2] for k, vals in playbook.items()}
+
+        self.kwargs['dataset']['transform'] = \
+            transforms.Compose([select_module(module=transforms, attr_=key)(*args, **kwargs)
+                for key, args, kwargs in self.kwargs['dataset']['transform']])
 
 
     def dynamic_training_init(self):
@@ -243,6 +261,7 @@ class PlaybookTrainer(NNetTrainer):
             self.model.parameters(), *self.args['optimizer'], **self.kwargs['optimizer'])
 
     def select_dataset(self):
+
         self.dataset = select_module(torchvision.datasets, self.tags['dataset'])(
             *self.args['dataset'], **self.kwargs['dataset'])
 
@@ -271,24 +290,15 @@ class PlaybookTrainer(NNetTrainer):
         return self.model
 
 
-
-
 def main():
 
-
-
     pt = PlaybookTrainer(playbook=hf.jsonLoad('playbooks/PlaybookTemplate.json'))
-
     pt.simple_training_init()
-
     print(len(list(pt.model.parameters())))
-
     pt.train()
 
     # pt.model = ResNet50_CLSA()
     # summary(model.cuda(), input_size=(3, 32, 32))
-
-
     exit()
 
     # print(pt.model[0].features)

@@ -1,36 +1,72 @@
-{"dataset": ["CIFAR10",
-				[],
-				{	
-					"root": "C://data//ML//CV//torchvision//cifar10",
-					"transform":[
-						["ToTensor", [], {}],
-						["Normalize", [[0.4913, 0.4822, 0.4465], [0.247, 0.243, 0.262]], {}]
+{
+	"dataset": [
+		"CIFAR10",
+		[],
+		{
+			"root": "C://data//ML//CV//torchvision//cifar10",
+			"transform": [
+				[
+					"ToTensor",
+					[],
+					{}
+				],
+				[
+					"Normalize",
+					[
+						[
+							0.4913,
+							0.4822,
+							0.4465
 						],
-					"train": true,
-					"download": false
-				}
+						[
+							0.247,
+							0.243,
+							0.262
+						]
+					],
+					{}
+				]
 			],
-"init_func": ["xavier_normal_",
-			[],
-			{}
-		],
-"scheduler": ["CosineAnnealingLR",
-				[],
-				{"eta_min": 1e-5, "T_max": 50}
-			 ],
-"optimizer": ["Adam",
-			[],
-			{"lr": 0.001, "weight_decay": 0.00001}],
-"loader": ["DataLoader",
-			[],
-			{"batch_size": 128,
+			"train": true,
+			"download": false
+		}
+	],
+	"init_func": [
+		"xavier_normal_",
+		[],
+		{}
+	],
+	"scheduler": [
+		"CosineAnnealingLR",
+		[],
+		{
+			"eta_min": 0.00001,
+			"T_max": 50
+		}
+	],
+	"optimizer": [
+		"Adam",
+		[],
+		{
+			"lr": 0.001,
+			"weight_decay": 0.00001
+		}
+	],
+	"loader": [
+		"DataLoader",
+		[],
+		{
+			"batch_size": 128,
 			"shuffle": true,
 			"num_workers": 0,
 			"pin_memory": true
-			}
-			],
-"model": ["vgg19_bn", 
-			[],
-			{"pretrained": true}
-			]
+		}
+	],
+	"model": [
+		"vgg19_bn",
+		[],
+		{
+			"pretrained": true
+		}
+	]
 }
